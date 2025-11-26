@@ -44,6 +44,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 flowers += `<circle cx="${x}" cy="${y}" r="8" fill="#FF69B4" /><circle cx="${x}" cy="${y}" r="4" fill="yellow" />`;
             }
             return flowers;
+        }},
+        { id: 'hearts', name: 'Corazones', generator: () => {
+            let hearts = '';
+            for (let i = 0; i < 4; i++) {
+                const x = Math.random() * 150 + 25;
+                const y = Math.random() * 20 + 75;
+                const scale = 0.5;
+                hearts += `<path transform="translate(${x},${y}) scale(${scale})" d="M 0, -5 C -5, -15, -15, -15, -15, -5 C -15, 5, -5, 10, 0, 20 C 5, 10, 15, 5, 15, -5 C 15, -15, 5, -15, 0, -5 Z" fill="red"/>`;
+            }
+            return hearts;
         }}
     ];
 
