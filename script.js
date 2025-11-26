@@ -9,11 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Definiciones de los componentes del pastel con sus propiedades SVG
     const cakeBases = [
         { id: 'chocolate-base', name: 'Base de Chocolate', color: '#8B4513' },
-        { id: 'vanilla-base', name: 'Base de Vainilla', color: '#F5DEB3' }
+        { id: 'vanilla-base', name: 'Base de Vainilla', color: '#F5DEB3' },
+        { id: 'strawberry-base', name: 'Base de Fresa', color: '#FFB6C1' },
+        { id: 'red-velvet-base', name: 'Base Red Velvet', color: '#990000' }
     ];
     const frostings = [
         { id: 'pink-frosting', name: 'Glaseado Rosa', color: '#FFC0CB' },
-        { id: 'green-frosting', name: 'Glaseado Verde', color: '#90EE90' }
+        { id: 'green-frosting', name: 'Glaseado Verde', color: '#90EE90' },
+        { id: 'chocolate-frosting', name: 'Glaseado de Chocolate', color: '#D2691E' },
+        { id: 'blue-frosting', name: 'Glaseado Azul', color: '#87CEEB' }
     ];
     const decorations = [
         { id: 'sprinkles', name: 'Chispas', generator: () => {
@@ -31,6 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 stars += `<polygon points="${x},${y} ${x+4},${y+8} ${x+12},${y+8} ${x+6},${y+13} ${x+8},${y+21} ${x},${y+17} ${x-8},${y+21} ${x-6},${y+13} ${x-12},${y+8} ${x-4},${y+8}" fill="yellow"/>`;
             }
             return stars;
+        }},
+        { id: 'flowers', name: 'Flores', generator: () => {
+            let flowers = '';
+            for (let i = 0; i < 3; i++) {
+                const x = Math.random() * 150 + 25;
+                const y = Math.random() * 30 + 70;
+                flowers += `<circle cx="${x}" cy="${y}" r="8" fill="#FF69B4" /><circle cx="${x}" cy="${y}" r="4" fill="yellow" />`;
+            }
+            return flowers;
         }}
     ];
 
