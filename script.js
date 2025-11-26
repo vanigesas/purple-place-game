@@ -6,15 +6,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitOrderBtn = document.getElementById('submit-order-btn');
     const scoreDisplay = document.getElementById('score');
 
-    // Opciones para los pasteles
-    const cakeBases = [{ id: 'chocolate-base', name: 'Base de Chocolate' }, { id: 'vanilla-base', name: 'Base de Vainilla' }];
-    const frostings = [{ id: 'pink-frosting', name: 'Glaseado Rosa' }, { id: 'green-frosting', name: 'Glaseado Verde' }];
-    const decorations = [{ id: 'sprinkles', name: 'Chispas' }, { id: 'stars', name: 'Estrellas' }];
+    // Definiciones de los componentes del pastel con sus propiedades SVG
+    const cakeBases = [
+        { id: 'chocolate-base', name: 'Base de Chocolate', color: '#8B4513' },
+        { id: 'vanilla-base', name: 'Base de Vainilla', color: '#F5DEB3' }
+    ];
+    const frostings = [
+        { id: 'pink-frosting', name: 'Glaseado Rosa', color: '#FFC0CB' },
+        { id: 'green-frosting', name: 'Glaseado Verde', color: '#90EE90' }
+    ];
+    const decorations = [
+        { id: 'sprinkles', name: 'Chispas', generator: () => {
+            let sprinkles = '';
+            for (let i = 0; i < 15; i++) {
+                sprinkles += `<rect x="${Math.random() * 160 + 20}" y="${Math.random() * 40 + 60}" width="10" height="3" rx="2" fill="white" transform="rotate(${Math.random() * 90} ${Math.random() * 160 + 20},${Math.random() * 40 + 60})"/>`;
+            }
+            return sprinkles;
+        }},
+        { id: 'stars', name: 'Estrellas', generator: () => {
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                const x = Math.random() * 150 + 25;
+                const y = Math.random() * 30 + 65;
+                stars += `<polygon points="${x},${y} ${x+4},${y+8} ${x+12},${y+8} ${x+6},${y+13} ${x+8},${y+21} ${x},${y+17} ${x-8},${y+21} ${x-6},${y+13} ${x-12},${y+8} ${x-4},${y+8}" fill="yellow"/>`;
+            }
+            return stars;
+        }}
+    ];
 
     // Estado del juego
     let currentOrder = {};
     let playerCake = {};
     let score = 0;
+
+    // Función para crear el SVG de un pastel
+    function createCakeSVG(cake) {
+        if (!cake.base || !cake.frosting || !cake.decoration) {
+            return ''; // Devuelve vacío si el pastel no está completo
+        }
+
+        const baseSvg = `<rect x="10" y="100" width="180" height="80" rx="10" fill="${cake.base.color}" />`;
+        const frostingSvg = `<path d="M10 100 C 30 120, 170 120, 190 100 L 190 80 C 170 60, 30 60, 10 80 Z" fill="${cake.frosting.color}" />`;
+        const decorationSvg = cake.decoration.generator();
+
+        return `<svg viewBox="0 0 200 200" class="cake-layer">${baseSvg}${frostingSvg}${decorationSvg}</svg>`;
+    }
 
     // Genera un nuevo pedido aleatorio
     function generateNewOrder() {
@@ -28,11 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Muestra el pedido en la interfaz
     function displayOrder() {
-        orderDisplay.innerHTML = `
-            <p><strong>Base:</strong> ${currentOrder.base.name}</p>
-            <p><strong>Glaseado:</strong> ${currentOrder.frosting.name}</p>
-            <p><strong>Decoración:</strong> ${currentOrder.decoration.name}</p>
-        `;
+        orderDisplay.innerHTML = createCakeSVG(currentOrder);
     }
 
     // Muestra las opciones para construir el pastel
@@ -61,7 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', (e) => {
                 const type = e.target.dataset.type;
                 const id = e.target.dataset.id;
-                playerCake[type] = { id: id, name: e.target.textContent };
+
+                let selectedOption;
+                if (type === 'base') selectedOption = cakeBases.find(b => b.id === id);
+                if (type === 'frosting') selectedOption = frostings.find(f => f.id === id);
+                if (type === 'decoration') selectedOption = decorations.find(d => d.id === id);
+
+                playerCake[type] = selectedOption;
                 updateCakePreview();
             });
         });
@@ -69,11 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Actualiza la vista previa del pastel
     function updateCakePreview() {
-        cakePreview.innerHTML = `
-            <p><strong>Base:</strong> ${playerCake.base ? playerCake.base.name : 'Ninguna'}</p>
-            <p><strong>Glaseado:</strong> ${playerCake.frosting ? playerCake.frosting.name : 'Ninguno'}</p>
-            <p><strong>Decoración:</strong> ${playerCake.decoration ? playerCake.decoration.name : 'Ninguna'}</p>
-        `;
+        if (playerCake.base && playerCake.frosting && playerCake.decoration) {
+            cakePreview.innerHTML = createCakeSVG(playerCake);
+        } else {
+            cakePreview.innerHTML = '<p>Construye tu pastel aquí</p>';
+        }
     }
 
     // Comprueba si el pastel del jugador coincide con el pedido
